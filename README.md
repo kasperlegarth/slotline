@@ -1,75 +1,37 @@
-# Nuxt Minimal Starter
+# Slotline
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Slotline er OddBeasts’ interne planlægnings- og analyseværktøj til social media content.  
+I første fase fokuserer værktøjet på **X (Twitter)**, men er bygget skalerbart, så vi senere kan tilføje integrationer til TikTok og YouTube Shorts.
 
-## Setup
+## 📌 Formål
+- Gøre det nemt at oprette, gemme, planlægge og publicere opslag eller tråde direkte til X.
+- Holde styr på kø, quotas og performance-metrics.
+- Bygge en solid teknisk base, der senere kan gøres til et kommercielt produkt.
 
-Make sure to install dependencies:
+## ✨ Nøglefunktioner (MVP)
+- Draft-editor til enkeltopslag og tråde
+- Køvisning med mulighed for at omrokere eller slette planlagte opslag
+- Integration med X API (free tier – 100 posts/måned)
+- Automatisk publicering via cron-jobs
+- Simpel analytics (visninger, likes, reposts, replies)
+- Quota-tracking pr. bruger
 
-```bash
-# npm
-npm install
+## 🛠 Tech Stack
 
-# pnpm
-pnpm install
+### Frontend
+- **Nuxt 3 (Vue 3)** – SSR/SPA hybrid for fleksibilitet og performance
+- **Tailwind CSS** – Utility-first styling
+- **shadcn-vue** – Genanvendelige, tilpassede UI-komponenter
+- **Histoire** – Dokumentation og komponent-playground
 
-# yarn
-yarn install
+### Backend / Infrastruktur
+- **Supabase (PostgreSQL)** – Database, auth, RLS, realtime
+- **Supabase Edge Functions** – API-facade, posting, metrics-fetch
+- **Supabase Scheduler (Cron)** – Automatiseret posting og dataopdatering
+- **X API v2 (OAuth 2.0)** – Brugerautentifikation og post-publicering
 
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### Hosting / DevOps
+- **Vercel** – Frontend-hosting, previews for hver PR
+- **GitHub** – Versionskontrol og CI
+- **Renovate** – Afhængighedsstyring
+- **Playwright + axe-core** – Accessibility-tests

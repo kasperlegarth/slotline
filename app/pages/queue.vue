@@ -1,0 +1,1 @@
+<template><h2 class="text-xl font-semibold mb-4">Queue</h2></template>
