@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@plugin "tailwindcss-animate";
+
+@theme {
+  --color-background: #FAFAF8;
+  --color-foreground: #0B0F10;
+  --color-card: #FFFFFF;
+  --color-muted: #F2F0EC;
+  --color-border: #E7E3DC;
+  --color-primary: #12B886;
+  --color-accent: #FF6B6B;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #E11D48;
+  --color--info: #0EA5E9;
+}
+
+html.dark {
+    --color-background:#0F1312;
+    --color-foreground:#E8F1EE;
+    --color-card:#141A19;
+    --color-muted:#1C2321;
+    --color-border:#26302D;
+  }
