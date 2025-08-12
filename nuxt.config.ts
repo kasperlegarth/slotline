@@ -12,9 +12,9 @@ export default defineNuxtConfig({
     prefix: '',
     /**
      * Directory that the component lives in.
-     * @default "./app/components/ui"
+     * @default "./components/ui"
      */
-    componentDir: './app/components/ui'
+    componentDir: './components/ui'
   },
   vite: {
     plugins: [

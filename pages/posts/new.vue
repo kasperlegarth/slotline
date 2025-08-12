@@ -4,13 +4,13 @@ import SchedulingPanel from '@/components/slotline/SchedulingPanel.vue'
 import TweetEditor from '@/components/slotline/TweetEditor.vue'
 import ThreadPreview from '@/components/slotline/ThreadPreview.vue'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { useObjectUrls } from '@/composables/useObjectUrls'
-import { countGraphemes } from '@/composables/useGraphemes'
-import { toUTCISOString, formatLocalLabel } from '@/utils/time'
-import { ThreadSchema } from '@/schemas/thread'
-import type { TweetDraft } from '@/types/slotline'
+import { Button } from '~~/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '~~/components/ui/card'
+import { useObjectUrls } from '~~/composables/useObjectUrls'
+import { countGraphemes } from '~~/composables/useGraphemes'
+import { toUTCISOString, formatLocalLabel } from '~~/utils/time'
+import { ThreadSchema } from '~~/schemas/thread'
+import type { TweetDraft } from '~~/types/slotline'
 
 const MAX_TWEETS = 10
 const MAX_IMAGES = 4
