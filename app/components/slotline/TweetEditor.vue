@@ -9,7 +9,7 @@ import type { TweetDraft } from '@/types/slotline'
 import { countGraphemes } from '@/composables/useGraphemes'
 
 const props = defineProps<{
-  modelValue: TweetDraft
+  tweet: TweetDraft
   index: number
   limits: { maxChars: number; maxImages: number }
   createObjectUrl: (f: File) => string
@@ -17,21 +17,20 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:modelValue': [TweetDraft]
-  'remove': []
+  update: [TweetDraft, number]
+  remove: []
 }>()
 
-const tweet = computed<TweetDraft>({
-  get: () => props.modelValue,
-  set: (v) => emit('update:modelValue', v)
-})
+function updateTweet(partial: Partial<TweetDraft>) {
+  emit('update', { ...props.tweet, ...partial }, props.index)
+}
 
 function onText(v: string | number) {
-  tweet.value = { ...tweet.value, text: v }
+  updateTweet({ text: v as string })
 }
 
 function bumpFileKey() {
-  tweet.value = { ...tweet.value, fileInputKey: tweet.value.fileInputKey + 1 }
+  updateTweet({ fileInputKey: props.tweet.fileInputKey + 1 })
 }
 
 function onFilesSelected(e: Event) {
@@ -39,30 +38,28 @@ function onFilesSelected(e: Event) {
   if (!input?.files) return
   const selected = Array.from(input.files)
   const max = props.limits.maxImages
-  const current = tweet.value.images.length
+  const current = props.tweet.images.length
   if (current + selected.length > max) {
     alert(`You can only upload up to ${max} images per tweet.`)
-    bumpFileKey()
     return
   }
-  const nextImages = [...tweet.value.images]
-  const nextPreviews = [...tweet.value.previews]
+  const nextImages = [...props.tweet.images]
+  const nextPreviews = [...props.tweet.previews]
   selected.forEach(f => {
     const url = props.createObjectUrl(f)
     nextImages.push(f)
     nextPreviews.push(url)
   })
-  tweet.value = { ...tweet.value, images: nextImages, previews: nextPreviews }
-  bumpFileKey()
+  updateTweet({ images: nextImages, previews: nextPreviews })
 }
 
 function removeImage(imgIndex: number) {
-  const urls = [...tweet.value.previews]
-  const imgs = [...tweet.value.images]
+  const urls = [...props.tweet.previews]
+  const imgs = [...props.tweet.images]
   const [removed] = urls.splice(imgIndex, 1)
   imgs.splice(imgIndex, 1)
   if (removed) props.revokeObjectUrl(removed)
-  tweet.value = { ...tweet.value, images: imgs, previews: urls }
+  updateTweet({ images: imgs, previews: urls })
 }
 </script>
 
@@ -84,7 +81,7 @@ function removeImage(imgIndex: number) {
       <Textarea
         :id="`tweet-text-${index}`"
         :maxlength="limits.maxChars"
-        :model-value="tweet.text"
+        :model-value="props.tweet.text"
         @update:modelValue="onText"
         placeholder="What's the odd beast today?"
         class="min-h-[110px] resize-y"
@@ -97,18 +94,18 @@ function removeImage(imgIndex: number) {
     <div class="space-y-2">
       <Label :for="`tweet-images-${index}`">Images (optional)</Label>
       <Input
-        :key="tweet.fileInputKey"
+        :key="props.tweet.fileInputKey"
         :id="`tweet-images-${index}`"
         type="file"
         accept="image/*"
         multiple
-        @change="(e: Event) => onFilesSelected(e)"
+        @change="onFilesSelected"
       />
       <div class="text-xs text-muted-foreground">Up to {{ limits.maxImages }} images. JPG/PNG/WebP recommended.</div>
 
-      <div v-if="tweet.previews.length" class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div v-if="props.tweet.previews.length" class="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div
-          v-for="(preview, imgIndex) in tweet.previews"
+          v-for="(preview, imgIndex) in props.tweet.previews"
           :key="`img-${index}-${imgIndex}`"
           class="group relative rounded-lg overflow-hidden border"
         >
@@ -126,7 +123,7 @@ function removeImage(imgIndex: number) {
   </CardContent>
 
   <CardFooter class="justify-between">
-    <div class="text-xs text-muted-foreground">{{ tweet.images.length }} / {{ limits.maxImages }} images</div>
-    <div class="text-xs text-muted-foreground">{{ countGraphemes(tweet.text) }}/{{ limits.maxChars }}</div>
+  <div class="text-xs text-muted-foreground">{{ props.tweet.images.length }} / {{ limits.maxImages }} images</div>
+  <div class="text-xs text-muted-foreground">{{ countGraphemes(props.tweet.text) }}/{{ limits.maxChars }}</div>
   </CardFooter>
 </template>

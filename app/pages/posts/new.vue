@@ -40,7 +40,6 @@ function addTweet() {
 }
 
 function updateTweet(index: number, v: TweetDraft) {
-  console.log('updateTweet', index, v)
   tweets.value[index] = v
 }
 
@@ -111,7 +110,7 @@ async function save(kind: 'draft' | 'queue') {
         </div>
       </div>
       <p class="text-sm text-muted-foreground">
-        Compose a thread. {{ MAX_CHARS }} chars / tweet, {{ MAX_IMAGES }} images / tweet.
+        Compose tweets.
       </p>
       <div class="text-xs text-muted-foreground">
         Total characters: {{ totalCharCount }} • {{ scheduledLabel() }}
@@ -137,13 +136,13 @@ async function save(kind: 'draft' | 'queue') {
         class="border rounded-2xl"
       >
         <TweetEditor v-if="tweets[index]"
-          v-model="tweets[index]"
+          :tweet="tweets[index]"
           :index="index"
           :limits="{ maxChars: MAX_CHARS, maxImages: MAX_IMAGES }"
           :createObjectUrl="create"
           :revokeObjectUrl="revoke"
           @remove="() => removeTweet(index)"
-          @update:modelValue="(v) => updateTweet(index, v)"
+          @update="(v, idx) => updateTweet(idx, v)"
         />
       </Card>
 
