@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onUnmounted } from 'vue'
+import { buildTweetsWithUploadedMedia, createPost } from '@/lib/uploads'
 import SchedulingPanel from '@/components/slotline/SchedulingPanel.vue'
 import TweetEditor from '@/components/slotline/TweetEditor.vue'
 import ThreadPreview from '@/components/slotline/ThreadPreview.vue'
@@ -72,31 +73,30 @@ function validateThread() {
   return res
 }
 
-// Submit stubs (klar til at koble på Supabase)
 async function save(kind: 'draft' | 'queue') {
-  const res = validateThread()
-  if (!res.success) {
-    console.warn(res.error.flatten())
-    alert('Please fix validation issues (text length, images, schedule).')
-    return
-  }
+  // Lokal validering (du kan beholde din zod/vee-validate hvis ønsket)
+  const empty = tweets.value.every(t => !String(t.text).trim() && t.images.length === 0)
+  if (empty) { alert('Nothing to save'); return }
 
+  // 1) Upload media (presign + PUT)
+  const tweetsForUpload = tweets.value.map(t => ({ text: String(t.text), images: t.images as File[] }))
+  const tweetsWithMedia = await buildTweetsWithUploadedMedia(tweetsForUpload)
+
+  // 2) Build payload
   const payload = {
     kind,
     scheduleEnabled: schedule.value.enabled,
-    scheduledAtUTC: schedule.value.enabled && schedule.value.at
-      ? toUTCISOString(schedule.value.at)
-      : null,
-    tweets: tweets.value.map(t => ({
-      text: t.text,
-      imagesCount: t.images.length
-      // NOTE: Ved rigtig submit -> upload filer til storage og gem refs
-    }))
+    scheduledAtUTC: schedule.value.enabled && schedule.value.at ? toUTCISOString(schedule.value.at) : null,
+    platform: 'x' as const,
+    tweets: tweetsWithMedia
   }
 
-  console.log('SAVE', payload)
+  // 3) Create post
+  const res = await createPost(payload)
+  console.log('POST CREATED', res)
   alert(`Saved as ${kind.toUpperCase()} ✅`)
 }
+
 </script>
 
 <template>
