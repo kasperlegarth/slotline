@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 // nuxt.config.ts
 export default defineNuxtConfig({
   compatibilityDate: '2025-08-11',
-  css: ['~/assets/css/main.css'],
+  css: ['@/assets/css/main.css'],
   modules: ['shadcn-nuxt', '@nuxtjs/supabase'],
   shadcn: {
     /**
@@ -21,11 +21,11 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
   },
-  vite: {
-    plugins: [
-      tailwindcss(),
-    ],
-  },
+  // vite: {
+  //   plugins: [
+  //     tailwindcss(),
+  //   ],
+  // },
   postcss: {
     plugins: {
       autoprefixer: {}
