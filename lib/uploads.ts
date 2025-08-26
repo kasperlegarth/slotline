@@ -48,7 +48,7 @@ export async function buildTweetsWithUploadedMedia(tweets: { text: string; image
   // Map back
   const tweetsOut = tweets.map((t, idx) => {
     const span = indexSpans[idx]
-    const media = uploaded.slice(span.start, span.start + span.count)
+    const media = uploaded.slice(span?.start, span.start + span.count)
     return { text: t.text, media }
   })
 

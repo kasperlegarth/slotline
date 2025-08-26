@@ -11,11 +11,9 @@ async function postNow() {
   loading.value = true
   err.value = null
   try {
-    const mids = mediaIds.value.split(',').map(s => s.trim()).filter(Boolean)
-    // ✅ brug global $fetch direkte
-    res.value = await $fetch('/api/x/post-now', {
+    res.value = await $fetch('/api/twitter/tweet', {
       method: 'POST',
-      body: { text: text.value, mediaIds: mids }
+      body: { text: text.value, mediaIds: mediaIds.value.split(',').map(s => s.trim()).filter(Boolean), token: localStorage.getItem('twitter_accessToken') }
     })
   } catch (e: any) {
     err.value = e?.data?.message || e?.message || String(e)
