@@ -10,8 +10,8 @@ async function exchangeCode(code: string, verifier: string) {
   })
 
   const headers: Record<string,string> = { 'Content-Type':'application/x-www-form-urlencoded' }
-  // Valgfrit: hvis du har confidential app og vil bruge client_secret
   if (process.env.X_CLIENT_SECRET) {
+    // OK for confidential apps; for public apps udelades denne header
     const basic = btoa(`${process.env.X_CLIENT_ID}:${process.env.X_CLIENT_SECRET}`)
     headers.Authorization = `Basic ${basic}`
   }
@@ -40,7 +40,7 @@ export default defineEventHandler( async (event) => {
 
   const tok = await exchangeCode(code, verifier)
 
-  // Hent @handle (valgfrit)
+  // whoami (valgfrit) for handle
   let handle: string | null = null
   try {
     const me = await fetch('https://api.x.com/2/users/me', {
@@ -57,6 +57,7 @@ export default defineEventHandler( async (event) => {
     access_token: tok.access_token,
     refresh_token: tok.refresh_token ?? null,
     expires_at,
+    scope: tok.scope ?? null,
     updated_at: new Date().toISOString()
   }, { onConflict: 'platform' })
   if (error) throw createError({ statusCode:500, statusMessage:error.message })

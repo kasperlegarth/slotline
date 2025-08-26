@@ -1,4 +1,4 @@
-// OAuth 2.0 PKCE start – sender bruger til x.com/i/oauth2/authorize
+// server/api/x/oauth/start.get.ts
 const AUTHZ = 'https://x.com/i/oauth2/authorize'
 
 function b64url(buf: ArrayBuffer) {
@@ -11,11 +11,17 @@ async function genVerifierAndChallenge() {
   const challenge = b64url(digest)
   return { verifier, challenge }
 }
+function normalizeScopes(s?: string) {
+  if (!s) return ''
+  return s
+    .replace(/,/g, ' ')     // kommas -> mellemrum
+    .replace(/\s+/g, ' ')   // kollaps whitespace
+    .trim()
+}
 
 export default defineEventHandler(async (event) => {
   const { verifier, challenge } = await genVerifierAndChallenge()
   const state = crypto.randomUUID()
-
   setCookie(event, 'x_oauth_state', state, { httpOnly:true, sameSite:'lax', path:'/' })
   setCookie(event, 'x_oauth_verifier', verifier, { httpOnly:true, sameSite:'lax', path:'/' })
 
@@ -23,7 +29,7 @@ export default defineEventHandler(async (event) => {
   url.searchParams.set('response_type', 'code')
   url.searchParams.set('client_id', process.env.X_CLIENT_ID!)
   url.searchParams.set('redirect_uri', process.env.X_REDIRECT_URI!)
-  url.searchParams.set('scope', (process.env.X_SCOPES||'').split(/\s+/).join(' '))
+  url.searchParams.set('scope', normalizeScopes(process.env.X_SCOPES || 'tweet.write users.read offline.access media.write'))
   url.searchParams.set('state', state)
   url.searchParams.set('code_challenge', challenge)
   url.searchParams.set('code_challenge_method', 'S256')
